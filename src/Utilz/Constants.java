@@ -5,6 +5,20 @@ import Main.Game;
 import javax.swing.plaf.PanelUI;
 
 public class Constants {
+    public static class Environment{
+        public static final int MOVING_TREE_WIDTH_DEFAULT = 620;
+        public static final int MOVING_TREE_HEIGHT_DEFAULT = 360;
+
+        public static final int MOVING_TREE_WIDTH = (int) (MOVING_TREE_WIDTH_DEFAULT * Game.SCALE);
+        public static final int MOVING_TREE_HEIGHT = (int) (MOVING_TREE_HEIGHT_DEFAULT * Game.SCALE);
+
+
+        public static final int MOVING_SMALL_TREE_WIDTH_DEFAULT = 620;
+        public static final int MOVING_SMALL_TREE_HEIGHT_DEFAULT = 360;
+
+        public static final int MOVING_SMALL_TREE_WIDTH = (int) (MOVING_SMALL_TREE_WIDTH_DEFAULT * Game.SCALE);
+        public static final int MOVING_SMALL_TREE_HEIGHT = (int) (MOVING_SMALL_TREE_HEIGHT_DEFAULT * Game.SCALE);
+    }
 
     public static class UI{
         public static class Buttons{

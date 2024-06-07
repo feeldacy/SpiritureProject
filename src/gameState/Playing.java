@@ -4,10 +4,14 @@ import Entities.Player;
 import Levels.LevelManager;
 import Main.Game;
 import UI.PausedOverlay;
+import Utilz.LoadSave;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import static Utilz.Constants.Environment.*;
+import java.util.Random;
 
 public class Playing extends State implements StateMethods{
 
@@ -16,9 +20,21 @@ public class Playing extends State implements StateMethods{
     private PausedOverlay pausedOverlay;
     private boolean paused = false;
 
+    private int xLvlOffset;
+    private int leftBorder = (int) (0.2 * Game.GAME_WIDTH);
+    private int rightBorder = (int) (0.8 * Game.GAME_WIDTH);
+    private int lvlTilesWide = LoadSave.GetLevelData()[0].length;
+    private int maxTilesOffset = lvlTilesWide - Game.TILE_INWIDTH;
+    private int maxLevelOffsetX = maxTilesOffset * Game.TILE_SIZE;
+
+    private BufferedImage backgroundImg, movingTree, movingSmallTree;
+
     public Playing(Game game) {
         super(game);
         initClasses();
+        backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.BACKGROUND_MAIN);
+        movingTree = LoadSave.GetSpriteAtlas(LoadSave.MOVING_BACKGROUND);
+        movingSmallTree = LoadSave.GetSpriteAtlas(LoadSave.MOVING_BACKGROUND_2);
     }
 
     private void initClasses() {
@@ -44,17 +60,46 @@ public class Playing extends State implements StateMethods{
         if (!paused){
             levelManager.update();
             player.update();
+            checkCloseToBorder();
         } else {
             pausedOverlay.update();
         }
     }
 
+    private void checkCloseToBorder() {
+        int playerX = (int) player.getHitBox().x;
+        int diff = playerX - xLvlOffset;
+
+        if (diff > rightBorder)
+            xLvlOffset += diff - rightBorder;
+        else if (diff < leftBorder)
+            xLvlOffset += diff - leftBorder;
+
+        if (xLvlOffset > maxLevelOffsetX)
+            xLvlOffset = maxLevelOffsetX;
+        else if (xLvlOffset < 0)
+            xLvlOffset = 0;
+    }
+
     @Override
     public void draw(Graphics g) {
-        levelManager.draw(g);
-        player.render(g);
-        if (paused)
+        g.drawImage(backgroundImg, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+        drawTree(g);
+        levelManager.draw(g, xLvlOffset);
+        player.render(g, xLvlOffset);
+        if (paused) {
+            g.setColor(new Color(0, 0, 0, 150));
+            g.fillRect(0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT);
             pausedOverlay.draw(g);
+        }
+    }
+    private void drawTree(Graphics g){
+        for (int i = 0; i < 3; i++)
+            g.drawImage(movingSmallTree, (5 + i * MOVING_SMALL_TREE_WIDTH) - (int) (xLvlOffset * 0.3), 110, MOVING_SMALL_TREE_WIDTH, MOVING_SMALL_TREE_HEIGHT, null);
+
+        for (int i = 0; i < 3; i++)
+            g.drawImage(movingTree, (0 + i * MOVING_TREE_WIDTH) - (int) (xLvlOffset * 0.7), 110, MOVING_TREE_WIDTH, MOVING_TREE_HEIGHT, null);
+
     }
 
     public void mouseDragged(MouseEvent e){
