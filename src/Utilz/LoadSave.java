@@ -1,5 +1,6 @@
 package Utilz;
 
+import Entities.Enemy1;
 import Main.Game;
 
 import javax.imageio.ImageIO;
@@ -8,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import static Utilz.Constants.EnemyConstants.CRABBY;
 
 public class LoadSave {
 
@@ -26,6 +29,7 @@ public class LoadSave {
     public static final String BACKGROUND_MAIN = "background_game.png";
     public static final String MOVING_BACKGROUND = "Moving_Background.png";
     public static final String MOVING_BACKGROUND_2 = "small_tree.png";
+    public static final String CRABBY_SPRITE = "crabby_sprite.png";
 
 
 
@@ -49,6 +53,21 @@ public class LoadSave {
         return img;
     }
 
+    public static ArrayList<Enemy1> GetCrabs(){
+        BufferedImage img = GetSpriteAtlas(LEVEL_ONE_DATA);
+        ArrayList<Enemy1> list = new ArrayList<>();
+
+        for (int j = 0; j < img.getHeight(); j++){
+            for (int i = 0; i < img.getWidth(); i++){
+                Color color = new Color(img.getRGB(i, j));
+                int value = color.getGreen();
+                if (value == CRABBY){
+                    list.add(new Enemy1(i * Game.TILE_SIZE, j * Game.TILE_SIZE));
+                }
+            }
+        }
+        return list;
+    }
     public static int[][] GetLevelData(){
 
         BufferedImage img = GetSpriteAtlas(LEVEL_ONE_DATA);
